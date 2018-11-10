@@ -17,7 +17,7 @@
         <Grid Margin="0,25,0,0">
             <Grid>
                 <Grid>
-                    <Grid>
+                    <Grid x:Name="MainContainer" Focusable="True">
                         <Image x:Name="CurrentPicture" OpacityMask="Black" Margin="197,47,187,124" Source="pack://siteoforigin:,,,/Resources/avatar.jpg" Stretch="UniformToFill" ScrollViewer.HorizontalScrollBarVisibility="Visible"/>
                         <Button x:Name="RotateClockButton" Content="Rotate 90 Clockwise" HorizontalAlignment="Left" Margin="12,14,0,0" VerticalAlignment="Top" Width="130" RenderTransformOrigin="0.525,-0.371" Height="66" Background="#FFF9F908" Click="RotateClockButton_Click"/>
                         <Button x:Name="rotateCCWbutton" Content="Rotate 90 CCW" HorizontalAlignment="Left" Margin="12,95,0,0" VerticalAlignment="Top" Width="130" Height="66" Background="#FFF9F908" Click="rotateCCWbutton_Click"/>
@@ -46,11 +46,13 @@
                         <TextBox x:Name="Label" Margin="0,47,13,0" TextWrapping="Wrap" Text="Subject" HorizontalAlignment="Right" Width="138" Height="33" VerticalAlignment="Top"/>
                         <Button x:Name="Move2Button" Content="@\YYYY\MM\DD-Subject" VerticalAlignment="Top" Margin="0,228,10,0" Height="66" BorderBrush="{x:Null}" Background="#FFFDAE06" HorizontalAlignment="Right" Width="151"/>
                         <Button x:Name="Move2Trash" Content="Move To Trash" VerticalAlignment="Bottom" Height="66" RenderTransformOrigin="0.517,3.163" Background="#FFF73636" HorizontalAlignment="Right" Width="151"/>
-                        <Button x:Name="SkipButton" Content="Skip Picture" VerticalAlignment="Top" Margin="0,467,0,0" Height="66" Background="#FFFB990A" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="151" Click="SkipButton_Click"/>
-                        <Label x:Name="FilenameLable" Margin="197,10,205,0" VerticalAlignment="Top" Height="23"/>
-                        <Button x:Name="button" Content="Test Metadata" HorizontalAlignment="Left" Margin="485,0,0,46" Width="75" Click="button_Click" Height="20" VerticalAlignment="Bottom"/>
-                        <Button x:Name="button1" Content="Test Process" HorizontalAlignment="Left" Margin="300,0,0,46" Width="75" Click="TestProcessorClick" Height="20" VerticalAlignment="Bottom"/>
+                        <Button x:Name="SkipButton" Content="Next" Margin="446,0,0,24" Background="#FFFB990A" BorderBrush="{x:Null}" Click="SkipButton_Click" Height="48" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="149"/>
+                        <Label x:Name="FilenameLable" Margin="197,0,205,0" VerticalAlignment="Top" Height="33" Content="Filename goes here." FontSize="10"/>
                         <Button x:Name="GPS_button" Content="No GPS Coordinates Found" ToolTip="Open Coordinates in Google Maps" Margin="212,0,200,88" Click="GPS_button_Click" Height="26" VerticalAlignment="Bottom"/>
+                        <Button x:Name="BackButton" Content="Previous" Margin="368,0,0,24" Background="#FFFB990A" BorderBrush="{x:Null}" Click="BackButton_Click" RenderTransformOrigin="0.62,0.077" Height="44" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="60"/>
+                        <Button x:Name="FirstButton" Content="First" HorizontalAlignment="Left" Margin="244,0,0,40" VerticalAlignment="Bottom" Width="75" Click="FirstButton_Click"/>
+                        <Button x:Name="lastbutton" Content="Last" Margin="686,0,0,40" Click="lastbutton_Click" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom"/>
+                        <Button x:Name="OpStat" Content="Operationstatus" HorizontalAlignment="Left" Margin="46,668,0,0" VerticalAlignment="Top" Width="75"/>
                     </Grid>
 
                 </Grid>
