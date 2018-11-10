@@ -12,6 +12,7 @@ using ImageProcessor.Processors;
 using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
 using CoordinateSharp;
+using System.Windows.Input;
 
 namespace PhotoManagerDelStiv
 {
@@ -142,17 +143,24 @@ namespace PhotoManagerDelStiv
             // Format is automatically detected though can be changed.
             ISupportedImageFormat format = new JpegFormat { Quality = 100 };
             System.Drawing.Size halfsize = new System.Drawing.Size(Hor/2, Vert/2);
+
+
+            //img.RemovePropertyItem(0x0112);
+            
+
             using (MemoryStream inStream = new MemoryStream(photoBytes))
             {
+
                 using (MemoryStream outStream = new MemoryStream())
                 {
                     // Initialize the ImageFactory using the overload to preserve EXIF metadata.
                     using (ImageFactory imageFactory = new ImageFactory(preserveExifData: true))
                     {
+                        
                         switch (operation)
                         {
                             case "RotateCW":
-                                     imageFactory.Load(inStream).Format(format).Rotate(90).Save(outStream);
+                                     imageFactory.Load(inStream).Format(format).AutoRotate().Rotate(90).Save(outStream);
                                 break;
                             case "RotateCCW":
                                 imageFactory.Load(inStream).Format(format).AutoRotate().Rotate(270).Save(outStream);
@@ -219,9 +227,22 @@ namespace PhotoManagerDelStiv
 
             //Metadata Extractor
             IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(picturepath);
-            var Data = directories.OfType<MetadataExtractor.Formats.Exif.ExifDirectoryBase>().FirstOrDefault().Tags;
-            var Hor = GetNumber(Data[0].Description);
-            int Vert = GetNumber(Data[1].Description);
+            int Hor = 0;
+            int Vert = 0;
+
+
+            try
+            {
+                var Data = directories.OfType<MetadataExtractor.Formats.Exif.ExifDirectoryBase>().FirstOrDefault().Tags;
+                Hor = GetNumber(Data[0].Description);
+                Vert = GetNumber(Data[1].Description);
+            }
+            catch(Exception ex)
+            {
+                var Data = directories.OfType<MetadataExtractor.Formats.Jpeg.JpegDirectory>().FirstOrDefault().Tags;
+                Hor = GetNumber(Data[3].Description);
+                Vert = GetNumber(Data[2].Description);
+            }
 
 
             FilenameLable.Content = PicIndex + 1 + " of " + PicFiles.Count + " - " + picturepath + "\n" + Hor + "x" + Vert;
@@ -252,7 +273,7 @@ namespace PhotoManagerDelStiv
                 GPS_button.Content = "No GPS Coordinates Found!";
             }
 
-
+            GoTo.Text = PicIndex.ToString()+1;
             CurrentPicture.Source = image.Clone();
             CurrentPicture.UpdateLayout();
             MainContainer.UpdateLayout();
@@ -295,7 +316,7 @@ namespace PhotoManagerDelStiv
                 PicIndex++;
                 LoadPicture(PicFiles[PicIndex]);
     }
-            catch
+            catch(Exception ex)
             {
                 PicIndex--;
                 LoadPicture(PicFiles[PicIndex]);
@@ -412,6 +433,27 @@ namespace PhotoManagerDelStiv
                 LoadPicture(PicFiles[PicIndex]);        }
             catch
             {
+
+            }
+        }
+
+
+
+
+        private void GoTo_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                int NewIndex = GetNumber(GoTo.Text);
+                if ((0 <= NewIndex) && (NewIndex <= PicFiles.Count))
+                {
+                    PicIndex = NewIndex;
+                    LoadPicture(PicFiles[PicIndex]);
+                }
+                else
+                {
+                    GoTo.Text = PicIndex.ToString();
+                }
 
             }
         }

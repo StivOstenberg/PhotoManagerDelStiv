@@ -46,10 +46,11 @@
                         <Label x:Name="FilenameLable" Margin="197,0,205,0" VerticalAlignment="Top" Height="42" Content="Filename goes here.&#xD;&#xA;File data goes here" FontSize="10"/>
                         <Button x:Name="GPS_button" Content="No GPS Coordinates Found" ToolTip="Open Coordinates in Google Maps" Margin="212,0,200,88" Click="GPS_button_Click" Height="26" VerticalAlignment="Bottom"/>
                         <Button x:Name="BackButton" Content="Previous" Margin="368,0,0,24" Background="#FFFB990A" BorderBrush="{x:Null}" Click="BackButton_Click" RenderTransformOrigin="0.62,0.077" Height="44" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="60"/>
-                        <Button x:Name="FirstButton" Content="First" HorizontalAlignment="Left" Margin="244,0,0,40" VerticalAlignment="Bottom" Width="75" Click="FirstButton_Click"/>
-                        <Button x:Name="lastbutton" Content="Last" Margin="686,0,0,40" Click="lastbutton_Click" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom"/>
+                        <Button x:Name="FirstButton" Content="First" HorizontalAlignment="Left" Margin="197,0,0,38" VerticalAlignment="Bottom" Width="75" Click="FirstButton_Click"/>
+                        <Button x:Name="lastbutton" Content="Last" Margin="754,0,0,38" Click="lastbutton_Click" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom"/>
                         <Button x:Name="Resize50Button" Content="Resize 50%" HorizontalAlignment="Left" Margin="12,175,0,0" VerticalAlignment="Top" Width="130" Height="66" Background="#FFF9F908" Click="Resize50Button_Click"/>
                         <Button x:Name="Resize1024Button" Content="Resize 1024" HorizontalAlignment="Left" Margin="12,266,0,0" VerticalAlignment="Top" Width="130" Height="66" Background="#FFF9F908" ToolTip="Resizes image so long edge is 1024 pixels"/>
+                        <TextBox x:Name="GoTo" HorizontalAlignment="Left" Height="23" Margin="865,446,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="138" KeyDown="GoTo_KeyDown"/>
                     </Grid>
 
                 </Grid>
