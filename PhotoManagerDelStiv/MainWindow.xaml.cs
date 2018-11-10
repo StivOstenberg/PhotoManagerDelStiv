@@ -22,7 +22,7 @@ namespace PhotoManagerDelStiv
     {
 
         public string myGPS = "";
-        public string SourceRoot = @"C:\Temp";
+        public string SourceRoot = @"C:\Users\stiv\Desktop\2blog";
         public string DestRoot = @"D:\Camera";
         
         public string Destination1 = @"C:\_OneDrive\OneDrive\Mobile Pictures\Scenic & Travel\Gypsies";
@@ -72,10 +72,6 @@ namespace PhotoManagerDelStiv
 
         }
 
-        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
 
 
 
@@ -135,10 +131,17 @@ namespace PhotoManagerDelStiv
         /// <param name="operation">RotateCCW, RotateCW, Resize50, Long1024</param>
         public bool ModJPEG(string filename, string operation)
         {
+            IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(filename);
+            var Data = directories.OfType<MetadataExtractor.Formats.Exif.ExifDirectoryBase>().FirstOrDefault().Tags;
+
+            var Hor = GetNumber( Data[0].Description);
+            int Vert = GetNumber(Data[1].Description);
+
+
             byte[] photoBytes = File.ReadAllBytes(filename);   
             // Format is automatically detected though can be changed.
             ISupportedImageFormat format = new JpegFormat { Quality = 100 };
-            System.Drawing.Size size = new System.Drawing.Size(150, 0);
+            System.Drawing.Size halfsize = new System.Drawing.Size(Hor/2, Vert/2);
             using (MemoryStream inStream = new MemoryStream(photoBytes))
             {
                 using (MemoryStream outStream = new MemoryStream())
@@ -154,11 +157,8 @@ namespace PhotoManagerDelStiv
                             case "RotateCCW":
                                 imageFactory.Load(inStream).Format(format).AutoRotate().Rotate(270).Save(outStream);
                                 break;
-                            case "Resize50"://Not done yet.
-                                imageFactory.Load(inStream)
-                                    .Format(format)
-                                    .AutoRotate()
-                                    .Save(outStream);
+                            case "Resize50":
+                                 imageFactory.Load(inStream).Format(format).AutoRotate().Resize(halfsize).Save(outStream);
                                 break;
                         default:
                                 break;
@@ -169,15 +169,9 @@ namespace PhotoManagerDelStiv
                     inStream.Dispose();
                     try {
                         File.WriteAllBytes(filename, outStream.ToArray());
-                        OpStat.Content = "Write succeeded!";
-                        OpStat.Tag = "Modified " + filename;
-                        OpStat.ToolTip = "Modified " + filename;
                     }
                     catch(Exception ex)
                     {
-                        OpStat.Content = "Write failed!";
-                        OpStat.Tag = ex.Message;
-                        OpStat.ToolTip = ex.Message;
                         return false;
                     }
                     outStream.Close();
@@ -222,13 +216,15 @@ namespace PhotoManagerDelStiv
             
 
 
-            FilenameLable.Content = PicIndex+1 +" of " + PicFiles.Count + " - " + picturepath;
-
 
             //Metadata Extractor
-            var meps = ImageMetadataReader.ReadMetadata(picturepath);
             IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(picturepath);
+            var Data = directories.OfType<MetadataExtractor.Formats.Exif.ExifDirectoryBase>().FirstOrDefault().Tags;
+            var Hor = GetNumber(Data[0].Description);
+            int Vert = GetNumber(Data[1].Description);
 
+
+            FilenameLable.Content = PicIndex + 1 + " of " + PicFiles.Count + " - " + picturepath + "\n" + Hor + "x" + Vert;
 
             try
             {
@@ -270,6 +266,23 @@ namespace PhotoManagerDelStiv
         {
             RotateClockButton.IsEnabled = state;
             rotateCCWbutton.IsEnabled = state;
+        }
+
+
+        public static int GetNumber(string Text)
+        {
+            int val = 0;
+            for (int i = 0; i < Text.Length; i++)
+            {
+                char c = Text[i];
+                if (c >= '0' && c <= '9')
+                {
+                    val *= 10;
+                    //(ASCII code reference)
+                    val += c - 48;
+                }
+            }
+            return val;
         }
         #endregion Functions
 
@@ -382,7 +395,12 @@ namespace PhotoManagerDelStiv
             LoadPicture(PicFiles[PicIndex]);
         }
 
-
+        private void Resize50Button_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentPicture.Source = null;
+            var OK = ModJPEG(PicFiles[PicIndex], "Resize50");
+            if (OK) LoadPicture(PicFiles[PicIndex]);
+        }
     }
 
 
