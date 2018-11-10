@@ -18,15 +18,15 @@
             <Grid>
                 <Grid>
                     <Grid>
-                        <Image x:Name="image" OpacityMask="Black" Margin="240,-2,183,0"/>
-                        <Button x:Name="button" Content="Rotate 90 Clockwise" HorizontalAlignment="Left" Margin="12,14,0,0" VerticalAlignment="Top" Width="130" RenderTransformOrigin="0.525,-0.371" Height="33" Click="button_Click"/>
-                        <Button x:Name="button1" Content="Rotate 90 CCW" HorizontalAlignment="Left" Margin="12,52,0,0" VerticalAlignment="Top" Width="130" Height="31"/>
-                        <Button x:Name="Dest4Button" Content="Copy to Destination4" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="12,209,0,0" Height="34"/>
-                        <Button x:Name="Dest2Button" Content="Copy to Destination2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="12,133,0,0" Height="31"/>
-                        <Button x:Name="Dest1Button" Content="Copy to Destination1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="12,88,0,0" Height="40"/>
-                        <Button x:Name="Dest3Button" Content="Copy to Destination3" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="12,169,0,0" Height="35"/>
-                        <CheckBox x:Name="But1resize" Content="" VerticalAlignment="Top" RenderTransformOrigin="-0.487,0.676" Margin="162,103,816,0"/>
-                        <CheckBox x:Name="But2resize" Content="" VerticalAlignment="Top" RenderTransformOrigin="-0.487,0.676" Margin="162,141,827,0">
+                        <Image x:Name="CurrentPicture" OpacityMask="Black" Margin="197,47,187,124" Source="pack://siteoforigin:,,,/Resources/avatar.jpg" Stretch="UniformToFill" ScrollViewer.HorizontalScrollBarVisibility="Visible"/>
+                        <Button x:Name="RotateClockButton" Content="Rotate 90 Clockwise" HorizontalAlignment="Left" Margin="12,14,0,0" VerticalAlignment="Top" Width="130" RenderTransformOrigin="0.525,-0.371" Height="66" Background="#FFF9F908" Click="RotateClockButton_Click"/>
+                        <Button x:Name="rotateCCWbutton" Content="Rotate 90 CCW" HorizontalAlignment="Left" Margin="12,95,0,0" VerticalAlignment="Top" Width="130" Height="66" Background="#FFF9F908" Click="rotateCCWbutton_Click"/>
+                        <Button x:Name="Dest4Button" Content="Copy to Destination4" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="12,420,0,0" Height="66" Background="#FFC5F912"/>
+                        <Button x:Name="Dest2Button" Content="Copy to Destination2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="12,253,0,0" Height="66" Background="#FFC5F912"/>
+                        <Button x:Name="Dest1Button" Content="Copy to Destination1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="12,172,0,0" Height="66" Background="#FFC5F912"/>
+                        <Button x:Name="Dest3Button" Content="Copy to Destination3" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="12,336,0,0" Height="66" Background="#FFC5F912"/>
+                        <CheckBox x:Name="But1resize" Content="" VerticalAlignment="Top" RenderTransformOrigin="-0.487,0.676" Margin="163,198,815,0"/>
+                        <CheckBox x:Name="But2resize" Content="" VerticalAlignment="Top" RenderTransformOrigin="-0.487,0.676" Margin="162,279,827,0">
                             <CheckBox.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
@@ -36,10 +36,21 @@
                                 </TransformGroup>
                             </CheckBox.RenderTransform>
                         </CheckBox>
-                        <CheckBox x:Name="But3resize" Content="" VerticalAlignment="Top" RenderTransformOrigin="-0.487,0.676" Margin="162,177,835,0"/>
-                        <CheckBox x:Name="But4resize" Content="" VerticalAlignment="Top" RenderTransformOrigin="-0.487,0.676" Margin="162,216,835,0"/>
-                        <Label x:Name="label" Content="Resize" HorizontalAlignment="Left" VerticalAlignment="Top" Width="46" Margin="154,77,0,0"/>
-                        <Button x:Name="Move1Button" Content="Copy to Destination1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="868,251,0,0" Height="40"/>
+                        <CheckBox x:Name="But3resize" Content="" VerticalAlignment="Top" RenderTransformOrigin="-0.487,0.676" Margin="163,366,824,0"/>
+                        <CheckBox x:Name="But4resize" Content="" VerticalAlignment="Top" RenderTransformOrigin="-0.487,0.676" Margin="163,450,834,0"/>
+                        <Label x:Name="label" Content="Resize" HorizontalAlignment="Left" VerticalAlignment="Top" Width="46" Margin="155,143,0,0"/>
+                        <Button x:Name="Move1Button" Content="@\YYYY\MM\Subject\" VerticalAlignment="Top" Margin="0,147,10,0" Height="66" Background="#FFFB990A" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="151"/>
+                        <Button x:Name="up1" Content="Upload to Dest1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="10,505,0,0" Height="66" Background="#FF16FBFB"/>
+                        <Button x:Name="up2" Content="Upload to Dest2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="138" Margin="12,586,0,0" Height="66" RenderTransformOrigin="0.49,1.752" Background="#FF16FBFB"/>
+                        <Button x:Name="Move1Button_Copy" Content="Move2Root" VerticalAlignment="Top" Height="33" HorizontalAlignment="Right" Width="138" Margin="0,0,13,0"/>
+                        <TextBox x:Name="Label" Margin="0,47,13,0" TextWrapping="Wrap" Text="Subject" HorizontalAlignment="Right" Width="138" Height="33" VerticalAlignment="Top"/>
+                        <Button x:Name="Move2Button" Content="@\YYYY\MM\DD-Subject" VerticalAlignment="Top" Margin="0,228,10,0" Height="66" BorderBrush="{x:Null}" Background="#FFFDAE06" HorizontalAlignment="Right" Width="151"/>
+                        <Button x:Name="Move2Trash" Content="Move To Trash" VerticalAlignment="Bottom" Height="66" RenderTransformOrigin="0.517,3.163" Background="#FFF73636" HorizontalAlignment="Right" Width="151"/>
+                        <Button x:Name="SkipButton" Content="Skip Picture" VerticalAlignment="Top" Margin="0,467,0,0" Height="66" Background="#FFFB990A" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="151" Click="SkipButton_Click"/>
+                        <Label x:Name="FilenameLable" Margin="197,10,205,0" VerticalAlignment="Top" Height="23"/>
+                        <Button x:Name="button" Content="Test Metadata" HorizontalAlignment="Left" Margin="485,0,0,46" Width="75" Click="button_Click" Height="20" VerticalAlignment="Bottom"/>
+                        <Button x:Name="button1" Content="Test Process" HorizontalAlignment="Left" Margin="300,0,0,46" Width="75" Click="TestProcessorClick" Height="20" VerticalAlignment="Bottom"/>
+                        <Button x:Name="GPS_button" Content="No GPS Coordinates Found" ToolTip="Open Coordinates in Google Maps" Margin="212,0,200,88" Click="GPS_button_Click" Height="26" VerticalAlignment="Bottom"/>
                     </Grid>
 
                 </Grid>
