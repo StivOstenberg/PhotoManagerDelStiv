@@ -401,6 +401,20 @@ namespace PhotoManagerDelStiv
             var OK = ModJPEG(PicFiles[PicIndex], "Resize50");
             if (OK) LoadPicture(PicFiles[PicIndex]);
         }
+
+        private void Move2Trash_Click(object sender, RoutedEventArgs e)
+        {
+            string FN =Path.GetFileName(PicFiles[PicIndex]);
+            try
+            {
+                File.Move(PicFiles[PicIndex], @"C:\Deleted\" + FN);
+                PicFiles.RemoveAt(PicIndex);
+                LoadPicture(PicFiles[PicIndex]);        }
+            catch
+            {
+
+            }
+        }
     }
 
 

@@ -41,7 +41,7 @@
                         <Button x:Name="Move1Button_Copy" Content="Move2Root" VerticalAlignment="Top" Height="33" HorizontalAlignment="Right" Width="138" Margin="0,0,13,0"/>
                         <TextBox x:Name="Label" Margin="0,47,13,0" TextWrapping="Wrap" Text="Subject" HorizontalAlignment="Right" Width="138" Height="33" VerticalAlignment="Top"/>
                         <Button x:Name="Move2Button" Content="@\YYYY\MM\DD-Subject" VerticalAlignment="Top" Margin="0,228,10,0" Height="66" BorderBrush="{x:Null}" Background="#FFFDAE06" HorizontalAlignment="Right" Width="151"/>
-                        <Button x:Name="Move2Trash" Content="Move To Trash" VerticalAlignment="Bottom" Height="66" RenderTransformOrigin="0.517,3.163" Background="#FFF73636" HorizontalAlignment="Right" Width="151"/>
+                        <Button x:Name="Move2Trash" Content="Move To Trash" VerticalAlignment="Bottom" Height="66" RenderTransformOrigin="0.517,3.163" Background="#FFF73636" HorizontalAlignment="Right" Width="151" Click="Move2Trash_Click"/>
                         <Button x:Name="SkipButton" Content="Next" Margin="446,0,0,24" Background="#FFFB990A" BorderBrush="{x:Null}" Click="SkipButton_Click" Height="48" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="149"/>
                         <Label x:Name="FilenameLable" Margin="197,0,205,0" VerticalAlignment="Top" Height="42" Content="Filename goes here.&#xD;&#xA;File data goes here" FontSize="10"/>
                         <Button x:Name="GPS_button" Content="No GPS Coordinates Found" ToolTip="Open Coordinates in Google Maps" Margin="212,0,200,88" Click="GPS_button_Click" Height="26" VerticalAlignment="Bottom"/>
