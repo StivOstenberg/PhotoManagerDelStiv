@@ -13,6 +13,7 @@ using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
 using CoordinateSharp;
 using System.Windows.Input;
+using System.Drawing.Imaging;
 
 namespace PhotoManagerDelStiv
 {
@@ -129,24 +130,39 @@ namespace PhotoManagerDelStiv
         /// Modifies a JPEG file using ImageProcessor Library.  Long1024 resizes the image to be 1024 pixels on its long edge. Resize50 resizes 50%
         /// </summary>
         /// <param name="file">The name of the file to modify</param>
-        /// <param name="operation">RotateCCW, RotateCW, Resize50, Long1024</param>
+        /// <param name="operation">RotateCCW, RotateCW, Resize50, </param>
+        /// <remarks>Requires MetadataExtractor and ImageProcessor, both available with  NuGet 
+        /// Written by Stiv Ostenberg  (code@stiv.com)
+        /// 
+        /// </remarks>
+        
         public bool ModJPEG(string filename, string operation)
         {
             IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(filename);
-            var Data = directories.OfType<MetadataExtractor.Formats.Exif.ExifDirectoryBase>().FirstOrDefault().Tags;
+            int Hor = 0;
+            int Vert = 0;
 
-            var Hor = GetNumber( Data[0].Description);
-            int Vert = GetNumber(Data[1].Description);
+
+            try // Two possible options for getting the size.   If one fails, use the other.
+            {
+                var myData = directories.OfType<MetadataExtractor.Formats.Exif.ExifDirectoryBase>().FirstOrDefault().Tags;
+                Hor = GetNumber(myData[0].Description);
+                Vert = GetNumber(myData[1].Description);
+            }
+            catch (Exception ex)
+            {
+                var myData = directories.OfType<MetadataExtractor.Formats.Jpeg.JpegDirectory>().FirstOrDefault().Tags;
+                Hor = GetNumber(myData[3].Description);
+                Vert = GetNumber(myData[2].Description);
+            }
+
 
 
             byte[] photoBytes = File.ReadAllBytes(filename);   
-            // Format is automatically detected though can be changed.
             ISupportedImageFormat format = new JpegFormat { Quality = 100 };
-            System.Drawing.Size halfsize = new System.Drawing.Size(Hor/2, Vert/2);
 
 
-            //img.RemovePropertyItem(0x0112);
-            
+            System.Drawing.Size halfsize = new System.Drawing.Size(Hor/2, Vert/2); // Compute the new image size if 1/2 size is selected.
 
             using (MemoryStream inStream = new MemoryStream(photoBytes))
             {
@@ -175,15 +191,44 @@ namespace PhotoManagerDelStiv
                     }
                     inStream.Close();
                     inStream.Dispose();
-                    try {
-                        File.WriteAllBytes(filename, outStream.ToArray());
-                    }
-                    catch(Exception ex)
+
+                    //We have changed the rotation, but we need to remove the Exif rotation flag 
+                    try
                     {
+                        using (MemoryStream modStream = new MemoryStream())
+                        {
+                            var modImage = System.Drawing.Image.FromStream(outStream);
+                            PropertyItem RotValue = modImage.GetPropertyItem(0x0112); // Get the Exif Rotation Property Value which is 112Hex 274 int
+                                                                                      //The start point of stored data is, '01' means upper left, '03' lower right, '06' upper right, '08' lower left, '09' undefined.
+                            RotValue.Value[0] = 9; 
+                            modImage.SetPropertyItem(RotValue);
+                            modImage.Save(modStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                            try
+                            {
+
+                                File.WriteAllBytes(filename, modStream.ToArray());
+                            }
+                            catch (Exception ex)
+                            {
+                                outStream.Close();
+                                outStream.Dispose();
+                                modStream.Close();
+                                modStream.Dispose();
+                                return false;
+                            }
+                            outStream.Close();
+                            outStream.Dispose();
+                            modStream.Close();
+                            modStream.Dispose();
+
+                        }
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Oh Noes!   Something borked!");
                         return false;
                     }
-                    outStream.Close();
-                    outStream.Dispose();
+
                     return true;
                     
                 }
@@ -236,6 +281,7 @@ namespace PhotoManagerDelStiv
                 var Data = directories.OfType<MetadataExtractor.Formats.Exif.ExifDirectoryBase>().FirstOrDefault().Tags;
                 Hor = GetNumber(Data[0].Description);
                 Vert = GetNumber(Data[1].Description);
+                
             }
             catch(Exception ex)
             {
@@ -245,18 +291,66 @@ namespace PhotoManagerDelStiv
             }
 
 
+            string Rotatey = "No Exif Rotation Tag,  Budda be praised!";
+            try //Get the fucking EXIF Rotation Tag Data
+            {
+                
+                var Rot = directories.OfType<MetadataExtractor.Formats.Exif.ExifIfd0Directory>().FirstOrDefault().Tags;
+                Rotatey = Rot[4].Description;
+                NukeEXIFRotationbutton.Content = "Nuke Exif Rotation\n" + Rotatey;
+                NukeEXIFRotationbutton.ToolTip = Rotatey;
+
+            }
+            catch
+            {
+                NukeEXIFRotationbutton.Content = "Nuke Exif Rotation\n" + Rotatey;
+                NukeEXIFRotationbutton.ToolTip = Rotatey;
+            }
+
+
+
+
+
             FilenameLable.Content = PicIndex + 1 + " of " + PicFiles.Count + " - " + picturepath + "\n" + Hor + "x" + Vert;
 
             try
             {
                 var GPS = directories.OfType<MetadataExtractor.Formats.Exif.GpsDirectory>().FirstOrDefault();
                 var tags = GPS.Tags;
-                Coordinates = "GPS Coordinates: " + tags[1].Description + " " + tags[2].Description + " , " + tags[3].Description + " " + tags[4].Description;
+
+                var latref = "";
+                var lati = "";
+                var longref = "";
+                var longi = "";
+                var altref = "";
+                var alti = "";
+
+                foreach (Tag thistag in GPS.Tags)
+                {
+                    if(thistag.Name.Equals("GPS Latitude Ref"))   latref=thistag.Description ;
+                    if (thistag.Name.Equals("GPS Latitude")) lati = thistag.Description;
+                    if (thistag.Name.Equals("GPS Longitude Ref")) longref = thistag.Description;
+                    if (thistag.Name.Equals("GPS Longitude")) longi = thistag.Description;
+                    if (thistag.Name.Equals("GPS Altitude Ref")) altref = thistag.Description;
+                    if (thistag.Name.Equals("GPS Altitude")) alti = thistag.Description;
+
+                }
+
+
+
+
+
+
+                Coordinates = "GPS Coordinates: " + latref + " " + lati + " , " + longref + " " + longi;
                 Coordinates = Coordinates.Replace(@"\", "");
-                Altitude = tags[6].Description + " above " + tags[5].Description;
-                string myLat = tags[2].Description.Replace(@"\", "") + tags[1].Description;
-                string myLong = tags[4].Description.Replace(@"\", "") + tags[3].Description;
+                Altitude = alti + " above " + altref;
+                string myLat = latref.Replace(@"\", "") + lati;
+                string myLong = longref.Replace(@"\", "") + longi;
+
+
                 myGPS = myLat.Replace(" ", string.Empty) + " " + myLong.Replace(" ", string.Empty);
+
+
 
                 Coordinate C = new Coordinate();
                 Coordinate.TryParse(myGPS, out C);
@@ -268,7 +362,7 @@ namespace PhotoManagerDelStiv
                 GPS_button.IsEnabled = true;
 
             }
-            catch
+            catch(Exception ex)
             {
                 GPS_button.Content = "No GPS Coordinates Found!";
             }
@@ -305,6 +399,49 @@ namespace PhotoManagerDelStiv
             }
             return val;
         }
+
+
+        public bool clearexif1()
+        {
+            var original = @"c:\temp\exif.jpg";
+            var copy = original;
+            const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
+
+            using (Stream originalFileStream = File.Open(copy, FileMode.Open, FileAccess.Read))
+            {
+                BitmapDecoder decoder = BitmapDecoder.Create(originalFileStream, createOptions, BitmapCacheOption.None);
+
+
+                BitmapMetadata metadata = decoder.Frames[0].Metadata == null
+                  ? new BitmapMetadata("jpg")
+                  : decoder.Frames[0].Metadata.Clone() as BitmapMetadata;
+
+                if (metadata == null)
+                {
+                    string isit = "";
+                }
+                else
+                {
+
+                }
+
+                var keywords = metadata.Keywords == null ? new List<string>() : new List<string>(metadata.Keywords);
+                metadata.Keywords = new System.Collections.ObjectModel.ReadOnlyCollection<string>(keywords);
+                JpegBitmapEncoder encoder = new JpegBitmapEncoder { QualityLevel = 100 };
+                encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], decoder.Frames[0].Thumbnail, metadata,
+                  decoder.Frames[0].ColorContexts));
+
+                copy = @"c:\temp\exifout.jpg";
+
+                using (Stream newFileStream = File.Open(copy, FileMode.Create, FileAccess.ReadWrite))
+                {
+                    encoder.Save(newFileStream);
+                    return true;
+                }
+            }
+        }
+
+
         #endregion Functions
 
         ///UI Action Events
@@ -457,6 +594,7 @@ namespace PhotoManagerDelStiv
 
             }
         }
+
     }
 
 
